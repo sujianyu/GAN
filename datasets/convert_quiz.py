@@ -97,8 +97,7 @@ def _get_filenames_and_classes(dataset_dir):
 
 
 def _get_dataset_filename(dataset_dir, split_name, shard_id):
-    output_filename = 'quiz_%s_%05d-of-%05d.tfrecord' % (
-        split_name, shard_id, _NUM_SHARDS)
+    output_filename = 'quiz_%05d-of-%05d.tfrecord' % (shard_id, _NUM_SHARDS)
     return os.path.join(dataset_dir, output_filename)
 
 
@@ -149,12 +148,12 @@ def _convert_dataset(split_name, filenames, class_names_to_ids, dataset_dir):
 
 
 def _dataset_exists(dataset_dir):
-    for split_name in ['train', 'validation']:
-        for shard_id in range(_NUM_SHARDS):
-            output_filename = _get_dataset_filename(
-                dataset_dir, split_name, shard_id)
-            if not tf.gfile.Exists(output_filename):
-                return False
+    split_name = "train"
+    for shard_id in range(_NUM_SHARDS):
+        output_filename = _get_dataset_filename(
+            dataset_dir, split_name, shard_id)
+        if not tf.gfile.Exists(output_filename):
+            return False
     return True
 
 
@@ -173,10 +172,7 @@ def run(dataset_dir):
 
     photo_filenames, class_names = _get_filenames_and_classes(dataset_dir)
 
-    print(photo_filenames)
     class_names_to_ids = dict(zip(class_names, range(len(class_names))))
-
-    sys.exit(0)
 
     # Divide into train and test:
     random.seed(_RANDOM_SEED)
