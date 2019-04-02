@@ -36,13 +36,13 @@ import tensorflow as tf
 
 from datasets import dataset_utils
 
-_NUM_VALIDATION = 10000
+_NUM_VALIDATION = 0
 
 # Seed for repeatability.
 _RANDOM_SEED = 0
 
 # The number of shards per dataset split.
-_NUM_SHARDS = 0
+_NUM_SHARDS = 4
 
 #output directory
 class ImageReader(object):
@@ -172,19 +172,22 @@ def run(dataset_dir):
         return
 
     photo_filenames, class_names = _get_filenames_and_classes(dataset_dir)
+
+    print(photo_filenames)
     class_names_to_ids = dict(zip(class_names, range(len(class_names))))
+
+    sys.exit(0)
 
     # Divide into train and test:
     random.seed(_RANDOM_SEED)
     random.shuffle(photo_filenames)
-    training_filenames = photo_filenames[_NUM_VALIDATION:]
-    validation_filenames = photo_filenames[:_NUM_VALIDATION]
 
-    # First, convert the training and validation sets.
+    #GAN对抗网络
+    training_filenames = photo_filenames[:]
+
     _convert_dataset('train', training_filenames, class_names_to_ids,
                      dataset_dir)
-    _convert_dataset('validation', validation_filenames, class_names_to_ids,
-                     dataset_dir)
+    #_convert_dataset('validation', validation_filenames, class_names_to_ids,dataset_dir)
 
     # Finally, write the labels file:
     labels_to_class_names = dict(zip(range(len(class_names)), class_names))
