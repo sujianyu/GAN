@@ -66,7 +66,7 @@ def main(_):
         download_and_convert_flowers.run(FLAGS.dataset_dir)
     elif FLAGS.dataset_name == 'mnist':
         download_and_convert_mnist.run(FLAGS.dataset_dir)
-    elif FLAGS.dataset_name == 'hanzi':
+    elif FLAGS.dataset_name == 'hanzi_resize':
         convert_quiz.run(FLAGS.dataset_dir)
     else:
         raise ValueError(

@@ -42,7 +42,7 @@ _NUM_VALIDATION = 0
 _RANDOM_SEED = 0
 
 # The number of shards per dataset split.
-_NUM_SHARDS = 4
+_NUM_SHARDS = 1
 
 #output directory
 class ImageReader(object):
@@ -78,7 +78,7 @@ def _get_filenames_and_classes(dataset_dir):
       subdirectories, representing class names.
     """
 
-    flower_root = os.path.join(dataset_dir, 'hanzi')
+    flower_root = os.path.join(dataset_dir, 'hanzi_resize')
     directories = []
     class_names = []
     for filename in os.listdir(flower_root):
