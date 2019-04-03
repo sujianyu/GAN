@@ -1,6 +1,13 @@
 from PIL import Image
 import os
 import os
+import platform
+
+system = platform.system()
+if system == "Linux":
+    split = "/"
+elif system == "Windows":
+    split = "\\"
 data_dir = "data"
 data_set = "hanzi"
 weight_new = 255
@@ -36,8 +43,8 @@ for dir in directors:
         if os.path.isfile(path):
             filenames.append(path)
 for filename in filenames:
-    filename_resize = filename.split("\\")
+    filename_resize = filename.split(split)
     filename_resize = os.path.join(filename_resize[2], filename_resize[3])
     resizefile = os.path.join(output_path,filename_resize)
-    print(resizefile)
+    #print(resizefile)
     convertjpg(filename,resizefile)
