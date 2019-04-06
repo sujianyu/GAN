@@ -21,15 +21,15 @@ directors = []
 image_path = os.path.join(data_dir,data_set)
 for dir in os.listdir(image_path):
     #在新文件夹中创建标签目录
-    dir_new = os.path.join(output_path,dir)
-    if not os.path.isdir(dir_new):
-        os.mkdir(dir_new)
+    # dir_new = os.path.join(output_path,dir)
+    # if not os.path.isdir(dir_new):
+    #     os.mkdir(dir_new)
     path = os.path.join(image_path,dir)
     if os.path.isdir(path):
         directors.append(path)
 
 filenames = []
-def convertjpg(jpgfile,resizefile,width=255,height=255):
+def convertjpg(jpgfile,resizefile,width=128,height=128):
     img = Image.open(jpgfile)
     try:
         new_img = img.resize((width,height),Image.BILINEAR)
@@ -44,7 +44,7 @@ for dir in directors:
             filenames.append(path)
 for filename in filenames:
     filename_resize = filename.split(split)
-    filename_resize = os.path.join(filename_resize[2], filename_resize[3])
-    resizefile = os.path.join(output_path,filename_resize)
+    #filename_resize = os.path.join(filename_resize[2], filename_resize[3])
+    resizefile = os.path.join(output_path,filename_resize[3])
     #print(resizefile)
     convertjpg(filename,resizefile)

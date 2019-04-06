@@ -36,7 +36,7 @@ import tensorflow as tf
 
 from datasets import dataset_utils
 
-_NUM_VALIDATION = 0
+_NUM_VALIDATION = 10000
 
 # Seed for repeatability.
 _RANDOM_SEED = 0
@@ -44,7 +44,6 @@ _RANDOM_SEED = 0
 # The number of shards per dataset split.
 _NUM_SHARDS = 1
 
-#output directory
 class ImageReader(object):
     """Helper class that provides TensorFlow image coding utilities."""
 
@@ -77,7 +76,6 @@ def _get_filenames_and_classes(dataset_dir):
       A list of image file paths, relative to `dataset_dir` and the list of
       subdirectories, representing class names.
     """
-
     flower_root = os.path.join(dataset_dir, 'hanzi_resize')
     directories = []
     class_names = []
@@ -97,7 +95,8 @@ def _get_filenames_and_classes(dataset_dir):
 
 
 def _get_dataset_filename(dataset_dir, split_name, shard_id):
-    output_filename = 'quiz_%05d-of-%05d.tfrecord' % (shard_id, _NUM_SHARDS)
+    output_filename = 'quiz_%s_%05d-of-%05d.tfrecord' % (
+        split_name, shard_id, _NUM_SHARDS)
     return os.path.join(dataset_dir, output_filename)
 
 
@@ -148,12 +147,12 @@ def _convert_dataset(split_name, filenames, class_names_to_ids, dataset_dir):
 
 
 def _dataset_exists(dataset_dir):
-    split_name = "train"
-    for shard_id in range(_NUM_SHARDS):
-        output_filename = _get_dataset_filename(
-            dataset_dir, split_name, shard_id)
-        if not tf.gfile.Exists(output_filename):
-            return False
+    for split_name in ['train', 'validation']:
+        for shard_id in range(_NUM_SHARDS):
+            output_filename = _get_dataset_filename(
+                dataset_dir, split_name, shard_id)
+            if not tf.gfile.Exists(output_filename):
+                return False
     return True
 
 
@@ -171,16 +170,15 @@ def run(dataset_dir):
         return
 
     photo_filenames, class_names = _get_filenames_and_classes(dataset_dir)
-
     class_names_to_ids = dict(zip(class_names, range(len(class_names))))
 
     # Divide into train and test:
     random.seed(_RANDOM_SEED)
     random.shuffle(photo_filenames)
-
-    #GAN对抗网络
     training_filenames = photo_filenames[:]
+    #validation_filenames = photo_filenames[:_NUM_VALIDATION]
 
+    # First, convert the training and validation sets.
     _convert_dataset('train', training_filenames, class_names_to_ids,
                      dataset_dir)
     #_convert_dataset('validation', validation_filenames, class_names_to_ids,dataset_dir)
@@ -189,4 +187,4 @@ def run(dataset_dir):
     labels_to_class_names = dict(zip(range(len(class_names)), class_names))
     dataset_utils.write_label_file(labels_to_class_names, dataset_dir)
 
-    print('\nFinished converting the quiz dataset!')
+    print('\nFinished converting the Flowers dataset!')
