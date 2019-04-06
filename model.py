@@ -78,14 +78,6 @@ class DCGAN(object):
       print(self.data_y.shape)
       sys.exit(0)
 
-    elif self.dataset_name == "hanzi":
-      print("hanzi")
-      self.data.X,self.data_y = self.load_mnist()
-      self.c_dim = 1
-      print(self.data.X)
-      print(self.data.y)
-      sys.exit(0)
-
     else:
       data_path = os.path.join(self.data_dir, self.dataset_name, self.input_fname_pattern)
       self.data = glob(data_path)
@@ -207,7 +199,7 @@ class DCGAN(object):
     else:
       print(" [!] Load failed...")
 
-    for epoch in xrange(config.epoch):
+    for epoch in range(config.epoch):
       if config.dataset == 'mnist':
         batch_idxs = min(len(self.data_X), config.train_size) // config.batch_size
       else:      
@@ -216,7 +208,7 @@ class DCGAN(object):
         np.random.shuffle(self.data)
         batch_idxs = min(len(self.data), config.train_size) // config.batch_size
 
-      for idx in xrange(0, int(batch_idxs)):
+      for idx in range(0, int(batch_idxs)):
         if config.dataset == 'mnist':
           batch_images = self.data_X[idx*config.batch_size:(idx+1)*config.batch_size]
           batch_labels = self.data_y[idx*config.batch_size:(idx+1)*config.batch_size]

@@ -28,6 +28,7 @@ flags.DEFINE_boolean("visualize", False, "True for visualizing, False for nothin
 flags.DEFINE_integer("generate_test_images", 100, "Number of images to generate during test. [100]")
 FLAGS = flags.FLAGS
 
+
 def main(_):
   pp.pprint(flags.FLAGS.__flags)
 
@@ -44,6 +45,7 @@ def main(_):
   #gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
   run_config = tf.ConfigProto()
   run_config.gpu_options.allow_growth=True
+  print(FLAGS.train_size)
 
   with tf.Session(config=run_config) as sess:
     if FLAGS.dataset == 'mnist':
