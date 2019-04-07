@@ -9,14 +9,20 @@ from six.moves import xrange
 import sys
 from ops import *
 from utils import *
+class TRAINSTEP(object):
+  def __init__(self ,epoch=0,idx=0):
+      self.epoch = epoch
+      self.idx = idx
+  def getstep(self):
+    return self.epoch,self.idx
 
 def conv_out_size_same(size, stride):
   return int(math.ceil(float(size) / float(stride)))
 
 class DCGAN(object):
   def __init__(self, sess, input_height=108, input_width=108, crop=True,
-         batch_size=64, sample_num = 64, output_height=64, output_width=64,
-         y_dim=None, z_dim=100, gf_dim=64, df_dim=64,
+         batch_size=64, sample_num = 1, output_height=64, output_width=64,
+         y_dim=None, z_dim=200, gf_dim=64, df_dim=64,
          gfc_dim=1024, dfc_dim=1024, c_dim=1, dataset_name='default',
          input_fname_pattern='*.jpg', checkpoint_dir=None, sample_dir=None, data_dir='data'):
     """
@@ -74,13 +80,12 @@ class DCGAN(object):
     if self.dataset_name == 'mnist':
       self.data_X, self.data_y = self.load_mnist()
       self.c_dim = self.data_X[0].shape[-1]
-      print(self.data_X.shape)
-      print(self.data_y.shape)
-      sys.exit(0)
 
     else:
       data_path = os.path.join(self.data_dir, self.dataset_name, self.input_fname_pattern)
       self.data = glob(data_path)
+
+
       if len(self.data) == 0:
         raise Exception("[!] No data found in '" + data_path + "'")
       np.random.shuffle(self.data)
@@ -193,19 +198,24 @@ class DCGAN(object):
     counter = 1
     start_time = time.time()
     could_load, checkpoint_counter = self.load(self.checkpoint_dir)
+    print("counter:",checkpoint_counter)
+    #sys.exit(0)
     if could_load:
       counter = checkpoint_counter
       print(" [*] Load SUCCESS")
+
     else:
       print(" [!] Load failed...")
 
-    for epoch in range(config.epoch):
+    for epoch in range(0,config.epoch):
+
       if config.dataset == 'mnist':
         batch_idxs = min(len(self.data_X), config.train_size) // config.batch_size
       else:      
         self.data = glob(os.path.join(
           config.data_dir, config.dataset, self.input_fname_pattern))
         np.random.shuffle(self.data)
+
         batch_idxs = min(len(self.data), config.train_size) // config.batch_size
 
       for idx in range(0, int(batch_idxs)):

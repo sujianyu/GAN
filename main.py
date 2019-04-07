@@ -6,6 +6,7 @@ from model import DCGAN
 from utils import pp, visualize, to_json, show_all_variables
 
 import tensorflow as tf
+import sys
 
 flags = tf.app.flags
 flags.DEFINE_integer("epoch", 25, "Epoch to train [25]")
@@ -45,7 +46,7 @@ def main(_):
   #gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
   run_config = tf.ConfigProto()
   run_config.gpu_options.allow_growth=True
-  print(FLAGS.train_size)
+
 
   with tf.Session(config=run_config) as sess:
     if FLAGS.dataset == 'mnist':
