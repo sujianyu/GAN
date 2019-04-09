@@ -3,6 +3,7 @@ Some codes from https://github.com/Newmu/dcgan_code
 """
 from __future__ import division
 import math
+import os.path
 import json
 import random
 import pprint
@@ -30,8 +31,8 @@ def get_image(image_path, input_height, input_width,
   return transform(image, input_height, input_width,
                    resize_height, resize_width, crop)
 
-def save_images(images, size, image_path):
-  return imsave(inverse_transform(images), size, image_path)
+def save_images(images, size, image_path,merge=True):
+  return imsave(inverse_transform(images), size, image_path,merge=merge)
 
 def imread(path, grayscale = False):
   if (grayscale):
@@ -67,9 +68,18 @@ def merge(images, size):
     raise ValueError('in merge(images,size) images parameter '
                      'must have dimensions: HxW or HxWx3 or HxWx4')
 
-def imsave(images, size, path):
-  image = np.squeeze(merge(images, size))
-  return scipy.misc.imsave(path, image)
+def imsave(images, size, path,merge=True):
+  if merge:
+    image = np.squeeze(merge(images, size))
+    return_value = scipy.misc.imsave(path, image)
+  else:
+    file_num =0
+    for image in images:
+      file_num = file_num + 1
+      filename,ext = os.path.splitext(path)
+      newpath = filename + "_" + str(file_num) + ext
+      return_value = scipy.misc.imsave(newpath, image)
+  return return_value
 
 def center_crop(x, crop_h, crop_w,
                 resize_h=64, resize_w=64):
@@ -177,7 +187,7 @@ def make_gif(images, fname, duration=2, true_image=False):
 def visualize(sess, dcgan, config, option):
   image_frame_dim = int(math.ceil(config.batch_size**.5))
   #image_frame_dim = 128
-  sample_num = 100
+  sample_num = 200
   if option == 0:
     z_sample = np.random.uniform(-0.5, 0.5, size=(config.batch_size, dcgan.z_dim))
     samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
@@ -188,8 +198,8 @@ def visualize(sess, dcgan, config, option):
       print(" [*] %d" % idx)
       z_sample = np.random.uniform(-1, 1, size=(config.batch_size , dcgan.z_dim))
 
-      for kdx, z in enumerate(z_sample):
-        z[idx] = values[kdx]
+      # for kdx, z in enumerate(z_sample):
+      #   z[idx] = values[kdx]
 
       if config.dataset == "mnist":
         y = np.random.choice(10, config.batch_size)
@@ -200,7 +210,8 @@ def visualize(sess, dcgan, config, option):
       else:
         samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
 
-      save_images(samples, [image_frame_dim, image_frame_dim], './samples/test_arange_%s.png' % (idx))
+      save_images(samples, [image_frame_dim, image_frame_dim], './samples/sample_%s.png' % (idx),merge=False)
+
   elif option == 2:
     values = np.arange(0, 1, 1./config.batch_size)
     for idx in [random.randint(0, dcgan.z_dim - 1) for _ in range(dcgan.z_dim)]:
