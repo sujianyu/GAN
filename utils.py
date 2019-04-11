@@ -31,8 +31,12 @@ def get_image(image_path, input_height, input_width,
   return transform(image, input_height, input_width,
                    resize_height, resize_width, crop)
 
-def save_images(images, size, image_path,merge=True):
-  return imsave(inverse_transform(images), size, image_path,merge=merge)
+def save_images(images, size, image_path,mergeimg=True):
+  return imsave(inverse_transform(images), size, image_path,mergeimg=merge)
+
+def cv_imread(filepath):
+  cv_img = cv2.imdecode(np.formfile(filepath,dtype=np.uint8),cv2.IMREAD_COLOR)
+  return cv_img
 
 def imread(path, grayscale = False):
   if (grayscale):
@@ -210,7 +214,7 @@ def visualize(sess, dcgan, config, option):
       else:
         samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
 
-      save_images(samples, [image_frame_dim, image_frame_dim], './samples/sample_d_%s.jpeg' % (idx),merge=False)
+      save_images(samples, [image_frame_dim, image_frame_dim], './samples/sample_d_%s.jpeg' % (idx),mergeimg=False)
 
   elif option == 2:
     values = np.arange(0, 1, 1./config.batch_size)

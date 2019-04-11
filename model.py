@@ -83,13 +83,15 @@ class DCGAN(object):
 
     else:
       data_path = os.path.join(self.data_dir, self.dataset_name, self.input_fname_pattern)
+
       self.data = glob(data_path)
 
 
       if len(self.data) == 0:
         raise Exception("[!] No data found in '" + data_path + "'")
       np.random.shuffle(self.data)
-      imreadImg = imread(self.data[0])
+
+      imreadImg = imread(self.data[0],grayscale=True)
       if len(imreadImg.shape) >= 3: #check if image is a non-grayscale image by checking channel number
         self.c_dim = imread(self.data[0]).shape[-1]
       else:
@@ -198,8 +200,7 @@ class DCGAN(object):
     counter = 1
     start_time = time.time()
     could_load, checkpoint_counter = self.load(self.checkpoint_dir)
-    print("counter:",checkpoint_counter)
-    #sys.exit(0)
+
     if could_load:
       counter = checkpoint_counter
       print(" [*] Load SUCCESS")
@@ -299,8 +300,8 @@ class DCGAN(object):
         print("Epoch: [%2d/%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" \
           % (epoch, config.epoch, idx, batch_idxs,
             time.time() - start_time, errD_fake+errD_real, errG))
-
-        if np.mod(counter, 100) == 1:
+        print("counter:",counter)
+        if np.mod(counter, 1) == 0:
           if config.dataset == 'mnist':
             samples, d_loss, g_loss = self.sess.run(
               [self.sampler, self.d_loss, self.g_loss],
