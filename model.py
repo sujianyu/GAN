@@ -301,7 +301,7 @@ class DCGAN(object):
           % (epoch, config.epoch, idx, batch_idxs,
             time.time() - start_time, errD_fake+errD_real, errG))
         print("counter:",counter)
-        if np.mod(counter, 1) == 0:
+        if np.mod(counter, 5) == 0:
           if config.dataset == 'mnist':
             samples, d_loss, g_loss = self.sess.run(
               [self.sampler, self.d_loss, self.g_loss],

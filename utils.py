@@ -43,7 +43,8 @@ def imread(path, grayscale = False):
     return scipy.misc.imread(path, flatten = True).astype(np.float)
   else:
     # Reference: https://github.com/carpedm20/DCGAN-tensorflow/issues/162#issuecomment-315519747
-    img_bgr = cv2.imread(path)
+    #img_bgr = cv2.imread(path)
+    img_bgr = cv_imread(path)
     # Reference: https://stackoverflow.com/a/15074748/
     img_rgb = img_bgr[..., ::-1]
     return img_rgb.astype(np.float)
@@ -72,8 +73,8 @@ def merge(images, size):
     raise ValueError('in merge(images,size) images parameter '
                      'must have dimensions: HxW or HxWx3 or HxWx4')
 
-def imsave(images, size, path,merge=True):
-  if merge:
+def imsave(images, size, path,mergeimg=True):
+  if mergeimg:
     image = np.squeeze(merge(images, size))
     return_value = scipy.misc.imsave(path, image)
   else:
