@@ -29,6 +29,17 @@ flags.DEFINE_boolean("visualize", False, "True for visualizing, False for nothin
 flags.DEFINE_integer("generate_test_images", 100, "Number of images to generate during test. [100]")
 FLAGS = flags.FLAGS
 
+def get_hanzi(FLAGS):
+    hanzisets = []
+    # 取汉字形成集合
+    datasetp = FLAGS.dataset
+    data_dir = FLAGS.data_dir
+    hanzi_path = os.path.join(FLAGS.data_dir, FLAGS.dataset)
+    for dir in os.listdir(hanzi_path):
+        path = os.path.join(hanzi_path, dir)
+        if os.path.isdir(path):
+            hanzisets.append(dir)
+    return hanzisets
 
 def main(_):
   pp.pprint(flags.FLAGS.__flags)
@@ -86,16 +97,7 @@ def main(_):
     show_all_variables()
 
     if FLAGS.train:
-      datasets = []
-      #取汉字形成集合
-      hanzi_path = FLAGS.data_dir
-      for dir in os.listdir(hanzi_path):
-          path = os.path.join(hanzi_path, dir)
-          if os.path.isdir(path):
-              datasets.append(path)
-      for dataset in datasets:
-          print(dataset)
-      dcgan.train(FLAGS)
+        dcgan.train(FLAGS)
     else:
       if not dcgan.load(FLAGS.checkpoint_dir)[0]:
         raise Exception("[!] Train a model first, then run test mode")
