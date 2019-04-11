@@ -1,6 +1,7 @@
 from PIL import Image
 import os
 import os
+import sys
 import platform
 
 system = platform.system()
@@ -10,8 +11,8 @@ elif system == "Windows":
     split = "\\"
 data_dir = "data"
 data_set = "hanzi"
-weight_new = 255
-height_new = 255
+weight_new = 128
+height_new = 128
 
 output_path = os.path.join(data_dir,data_set + "_resize")
 if not os.path.isdir(output_path):
@@ -21,9 +22,9 @@ directors = []
 image_path = os.path.join(data_dir,data_set)
 for dir in os.listdir(image_path):
     #在新文件夹中创建标签目录
-    # dir_new = os.path.join(output_path,dir)
-    # if not os.path.isdir(dir_new):
-    #     os.mkdir(dir_new)
+    dir_new = os.path.join(output_path,dir)
+    if not os.path.isdir(dir_new):
+         os.mkdir(dir_new)
     path = os.path.join(image_path,dir)
     if os.path.isdir(path):
         directors.append(path)
@@ -44,7 +45,7 @@ for dir in directors:
             filenames.append(path)
 for filename in filenames:
     filename_resize = filename.split(split)
-    #filename_resize = os.path.join(filename_resize[2], filename_resize[3])
-    resizefile = os.path.join(output_path,filename_resize[3])
+    filename_resize = os.path.join(filename_resize[2], filename_resize[3])
+    resizefile = os.path.join(output_path,filename_resize)
     #print(resizefile)
     convertjpg(filename,resizefile)
