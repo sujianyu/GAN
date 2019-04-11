@@ -31,8 +31,8 @@ def get_image(image_path, input_height, input_width,
   return transform(image, input_height, input_width,
                    resize_height, resize_width, crop)
 
-def save_images(images, size, image_path,merge=True):
-  return imsave(inverse_transform(images), size, image_path,merge=merge)
+def save_images(images, size, image_path,mergeimg=True):
+  return imsave(inverse_transform(images), size, image_path,mergeimg=mergeimg)
 
 def imread(path, grayscale = False):
   if (grayscale):
@@ -68,8 +68,8 @@ def merge(images, size):
     raise ValueError('in merge(images,size) images parameter '
                      'must have dimensions: HxW or HxWx3 or HxWx4')
 
-def imsave(images, size, path,merge=True):
-  if merge:
+def imsave(images, size, path,mergeimg=True):
+  if mergeimg:
     image = np.squeeze(merge(images, size))
     return_value = scipy.misc.imsave(path, image)
   else:
@@ -187,7 +187,7 @@ def make_gif(images, fname, duration=2, true_image=False):
 def visualize(sess, dcgan, config, option):
   image_frame_dim = int(math.ceil(config.batch_size**.5))
   #image_frame_dim = 128
-  sample_num = 400
+  sample_num = 200
   if option == 0:
     z_sample = np.random.uniform(-0.5, 0.5, size=(config.batch_size, dcgan.z_dim))
     samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
@@ -210,7 +210,7 @@ def visualize(sess, dcgan, config, option):
       else:
         samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
 
-      save_images(samples, [image_frame_dim, image_frame_dim], './samples/sample_d_%s.png' % (idx),merge=False)
+      save_images(samples, [image_frame_dim, image_frame_dim], './samples/sample_a_%s.jpg' % (idx),mergeimg=False)
 
   elif option == 2:
     values = np.arange(0, 1, 1./config.batch_size)
