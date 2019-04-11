@@ -19,6 +19,18 @@ class TRAINSTEP(object):
 def conv_out_size_same(size, stride):
   return int(math.ceil(float(size) / float(stride)))
 
+def get_hanzi(data_dir,dataset):
+    hanzisets = []
+    # 取汉字形成集合
+    datasetp = dataset
+    data_dir = data_dir
+    hanzi_path = os.path.join(data_dir, dataset)
+    for dir in os.listdir(hanzi_path):
+      path = os.path.join(hanzi_path, dir)
+      if os.path.isdir(path):
+        hanzisets.append(dir)
+    return hanzisets
+
 class DCGAN(object):
   def __init__(self, sess, input_height=108, input_width=108, crop=True,
          batch_size=64, sample_num = 1, output_height=64, output_width=64,
@@ -83,6 +95,7 @@ class DCGAN(object):
 
     else:
       data_path = os.path.join(self.data_dir, self.dataset_name, self.input_fname_pattern)
+
       self.data = glob(data_path)
 
 
