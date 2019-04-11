@@ -19,10 +19,6 @@ class TRAINSTEP(object):
 def conv_out_size_same(size, stride):
   return int(math.ceil(float(size) / float(stride)))
 
-#激活函数
-def swish(x,b=1):
-  return x* tf.nn.sigmoid(x*b)
-
 class DCGAN(object):
   def __init__(self, sess, input_height=108, input_width=108, crop=True,
          batch_size=64, sample_num = 1, output_height=64, output_width=64,
@@ -303,8 +299,8 @@ class DCGAN(object):
         print("Epoch: [%2d/%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" \
           % (epoch, config.epoch, idx, batch_idxs,
             time.time() - start_time, errD_fake+errD_real, errG))
-
-        if np.mod(counter, 100) == 0:
+        print("counter:",counter)
+        if np.mod(counter, 50) == 0:
           if config.dataset == 'mnist':
             samples, d_loss, g_loss = self.sess.run(
               [self.sampler, self.d_loss, self.g_loss],
@@ -315,7 +311,7 @@ class DCGAN(object):
               }
             )
             save_images(samples, image_manifold_size(samples.shape[0]),
-                  './{}/train_{:02d}_{:04d}.jpeg'.format(config.sample_dir, epoch, idx))
+                  './{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, epoch, idx),mergeimg=False)
             print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss)) 
           else:
             try:
@@ -327,12 +323,12 @@ class DCGAN(object):
                 },
               )
               save_images(samples, image_manifold_size(samples.shape[0]),
-                    './{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, epoch, idx),True)
+                    './{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, epoch, idx))
               print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss)) 
             except:
               print("one pic error!...")
 
-        if np.mod(counter, 500) == 2:
+        if np.mod(counter, 20) == 0:
           self.save(config.checkpoint_dir, counter)
 
   def discriminator(self, image, y=None, reuse=False):
@@ -382,22 +378,18 @@ class DCGAN(object):
         self.h0 = tf.reshape(
             self.z_, [-1, s_h16, s_w16, self.gf_dim * 8])
         h0 = tf.nn.relu(self.g_bn0(self.h0))
-        #h0 = swish(self.g_bn0(self.h0))
 
         self.h1, self.h1_w, self.h1_b = deconv2d(
             h0, [self.batch_size, s_h8, s_w8, self.gf_dim*4], name='g_h1', with_w=True)
         h1 = tf.nn.relu(self.g_bn1(self.h1))
-        #h1 = swish(self.g_bn1(self.h1))
 
         h2, self.h2_w, self.h2_b = deconv2d(
             h1, [self.batch_size, s_h4, s_w4, self.gf_dim*2], name='g_h2', with_w=True)
         h2 = tf.nn.relu(self.g_bn2(h2))
-        #h2 = swish(self.g_bn2(h2))
 
         h3, self.h3_w, self.h3_b = deconv2d(
             h2, [self.batch_size, s_h2, s_w2, self.gf_dim*1], name='g_h3', with_w=True)
         h3 = tf.nn.relu(self.g_bn3(h3))
-        #h3 = swish(self.g_bn3(h3))
 
         h4, self.h4_w, self.h4_b = deconv2d(
             h3, [self.batch_size, s_h, s_w, self.c_dim], name='g_h4', with_w=True)

@@ -9,7 +9,7 @@ import tensorflow as tf
 import sys
 
 flags = tf.app.flags
-flags.DEFINE_integer("epoch", 25, "Epoch to train [25]")
+flags.DEFINE_integer("epoch", 1000, "Epoch to train [25]")
 flags.DEFINE_float("learning_rate", 0.0002, "Learning rate of for adam [0.0002]")
 flags.DEFINE_float("beta1", 0.5, "Momentum term of adam [0.5]")
 flags.DEFINE_float("train_size", np.inf, "The size of train images [np.inf]")
@@ -86,6 +86,15 @@ def main(_):
     show_all_variables()
 
     if FLAGS.train:
+      datasets = []
+      #取汉字形成集合
+      hanzi_path = FLAGS.data_dir
+      for dir in os.listdir(hanzi_path):
+          path = os.path.join(hanzi_path, dir)
+          if os.path.isdir(path):
+              datasets.append(path)
+      for dataset in datasets:
+          print(dataset)
       dcgan.train(FLAGS)
     else:
       if not dcgan.load(FLAGS.checkpoint_dir)[0]:
