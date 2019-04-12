@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Some codes from https://github.com/Newmu/dcgan_code
 """
@@ -34,13 +35,14 @@ def get_image(image_path, input_height, input_width,
 def save_images(images, size, image_path,mergeimg=True):
   return imsave(inverse_transform(images), size, image_path,mergeimg=merge)
 
+
 def imread(path, grayscale = False):
   if (grayscale):
     return scipy.misc.imread(path, flatten = True).astype(np.float)
   else:
     # Reference: https://github.com/carpedm20/DCGAN-tensorflow/issues/162#issuecomment-315519747
-    file_path_gbk = path.encode('gbk')
-    img_bgr = cv2.imread(file_path_gbk.decode())
+    #img_bgr = cv2.imdecode(np.fromfile(path,dtype=np.uint8),1)
+    img_bgr = cv2.imread(path)
     # Reference: https://stackoverflow.com/a/15074748/
     img_rgb = img_bgr[..., ::-1]
     return img_rgb.astype(np.float)
