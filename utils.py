@@ -39,7 +39,8 @@ def imread(path, grayscale = False):
     return scipy.misc.imread(path, flatten = True).astype(np.float)
   else:
     # Reference: https://github.com/carpedm20/DCGAN-tensorflow/issues/162#issuecomment-315519747
-    img_bgr = cv2.imread(path)
+    file_path_gbk = path.encode('gbk')
+    img_bgr = cv2.imread(file_path_gbk.decode())
     # Reference: https://stackoverflow.com/a/15074748/
     img_rgb = img_bgr[..., ::-1]
     return img_rgb.astype(np.float)
