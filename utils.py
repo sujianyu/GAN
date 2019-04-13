@@ -12,7 +12,7 @@ import cv2
 import numpy as np
 from time import gmtime, strftime
 from six.moves import xrange
-
+import sys
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 
@@ -32,7 +32,7 @@ def get_image(image_path, input_height, input_width,
                    resize_height, resize_width, crop)
 
 def save_images(images, size, image_path,mergeimg=True):
-  return imsave(inverse_transform(images), size, image_path,mergeimg=merge)
+  return imsave(inverse_transform(images), size, image_path,mergeimg)
 
 def imread(path, grayscale = False):
   if (grayscale):
@@ -187,7 +187,7 @@ def make_gif(images, fname, duration=2, true_image=False):
 def visualize(sess, dcgan, config, option):
   image_frame_dim = int(math.ceil(config.batch_size**.5))
   #image_frame_dim = 128
-  sample_num = 400
+  sample_num = 100
   if option == 0:
     z_sample = np.random.uniform(-0.5, 0.5, size=(config.batch_size, dcgan.z_dim))
     samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
@@ -209,8 +209,11 @@ def visualize(sess, dcgan, config, option):
         samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample, dcgan.y: y_one_hot})
       else:
         samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
-
-      save_images(samples, [image_frame_dim, image_frame_dim], './samples/sample_a_%s.png' % (idx),mergeimg=False)
+      hanzi = config.dataset.split("/")[-1]
+      outpath = os.path.join("visualize", hanzi)
+      if not os.path.isdir(outpath):
+        os.mkdir(outpath)
+      save_images(samples, [image_frame_dim, image_frame_dim], 'visualize/%s/sample_%s.jpeg' % (hanzi,idx),False)
 
   elif option == 2:
     values = np.arange(0, 1, 1./config.batch_size)

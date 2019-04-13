@@ -19,6 +19,7 @@ flags.DEFINE_integer("input_width", None, "The size of image to use (will be cen
 flags.DEFINE_integer("output_height", 64, "The size of the output images to produce [64]")
 flags.DEFINE_integer("output_width", None, "The size of the output images to produce. If None, same value as output_height [None]")
 flags.DEFINE_string("dataset", "celebA", "The name of dataset [celebA, mnist, lsun]")
+flags.DEFINE_string("hanzi_data","hanzi","The name of hanzi parent dir")
 flags.DEFINE_string("input_fname_pattern", "*.jpg", "Glob pattern of filename of input images [*]")
 flags.DEFINE_string("checkpoint_dir", "checkpoint", "Directory name to save the checkpoints [checkpoint]")
 flags.DEFINE_string("data_dir", "data", "Root directory of dataset [data]")
@@ -58,60 +59,66 @@ def main(_):
   run_config = tf.ConfigProto()
   run_config.gpu_options.allow_growth=True
 
+  hanzisets = get_hanzi(FLAGS)
+  for hanzi in hanzisets:
+    if not hanzi in ["且","世","老","新","利"]:
+      tf.reset_default_graph()
+      with tf.Session(config=run_config) as sess:
 
-  with tf.Session(config=run_config) as sess:
-    if FLAGS.dataset == 'mnist':
-      dcgan = DCGAN(
-          sess,
-          input_width=FLAGS.input_width,
-          input_height=FLAGS.input_height,
-          output_width=FLAGS.output_width,
-          output_height=FLAGS.output_height,
-          batch_size=FLAGS.batch_size,
-          sample_num=FLAGS.batch_size,
-          y_dim=10,
-          z_dim=FLAGS.generate_test_images,
-          dataset_name=FLAGS.dataset,
-          input_fname_pattern=FLAGS.input_fname_pattern,
-          crop=FLAGS.crop,
-          checkpoint_dir=FLAGS.checkpoint_dir,
-          sample_dir=FLAGS.sample_dir,
-          data_dir=FLAGS.data_dir)
-    else:
-      dcgan = DCGAN(
-          sess,
-          input_width=FLAGS.input_width,
-          input_height=FLAGS.input_height,
-          output_width=FLAGS.output_width,
-          output_height=FLAGS.output_height,
-          batch_size=FLAGS.batch_size,
-          sample_num=FLAGS.batch_size,
-          z_dim=FLAGS.generate_test_images,
-          dataset_name=FLAGS.dataset,
-          input_fname_pattern=FLAGS.input_fname_pattern,
-          crop=FLAGS.crop,
-          checkpoint_dir=FLAGS.checkpoint_dir,
-          sample_dir=FLAGS.sample_dir,
-          data_dir=FLAGS.data_dir)
+        FLAGS.dataset = FLAGS.hanzi_data + "/" + hanzi
+        print(FLAGS.dataset)
+        if FLAGS.dataset == 'mnist':
+          dcgan = DCGAN(
+              sess,
+              input_width=FLAGS.input_width,
+              input_height=FLAGS.input_height,
+              output_width=FLAGS.output_width,
+              output_height=FLAGS.output_height,
+              batch_size=FLAGS.batch_size,
+              sample_num=FLAGS.batch_size,
+              y_dim=10,
+              z_dim=FLAGS.generate_test_images,
+              dataset_name=FLAGS.dataset,
+              input_fname_pattern=FLAGS.input_fname_pattern,
+              crop=FLAGS.crop,
+              checkpoint_dir=FLAGS.checkpoint_dir,
+              sample_dir=FLAGS.sample_dir,
+              data_dir=FLAGS.data_dir)
+        else:
+          dcgan = DCGAN(
+              sess,
+              input_width=FLAGS.input_width,
+              input_height=FLAGS.input_height,
+              output_width=FLAGS.output_width,
+              output_height=FLAGS.output_height,
+              batch_size=FLAGS.batch_size,
+              sample_num=FLAGS.batch_size,
+              z_dim=FLAGS.generate_test_images,
+              dataset_name=FLAGS.dataset,
+              input_fname_pattern=FLAGS.input_fname_pattern,
+              crop=FLAGS.crop,
+              checkpoint_dir=FLAGS.checkpoint_dir,
+              sample_dir=FLAGS.sample_dir,
+              data_dir=FLAGS.data_dir)
 
-    show_all_variables()
+        show_all_variables()
 
-    if FLAGS.train:
-        dcgan.train(FLAGS)
-    else:
-      if not dcgan.load(FLAGS.checkpoint_dir)[0]:
-        raise Exception("[!] Train a model first, then run test mode")
-      
+        if FLAGS.train:
+            dcgan.train(FLAGS)
+        else:
+          if not dcgan.load(FLAGS.checkpoint_dir)[0]:
+            raise Exception("[!] Train a model first, then run test mode")
 
-    # to_json("./web/js/layers.js", [dcgan.h0_w, dcgan.h0_b, dcgan.g_bn0],
-    #                 [dcgan.h1_w, dcgan.h1_b, dcgan.g_bn1],
-    #                 [dcgan.h2_w, dcgan.h2_b, dcgan.g_bn2],
-    #                 [dcgan.h3_w, dcgan.h3_b, dcgan.g_bn3],
-    #                 [dcgan.h4_w, dcgan.h4_b, None])
 
-    # Below is codes for visualization
-    OPTION = 1
-    visualize(sess, dcgan, FLAGS, OPTION)
+        # to_json("./web/js/layers.js", [dcgan.h0_w, dcgan.h0_b, dcgan.g_bn0],
+        #                 [dcgan.h1_w, dcgan.h1_b, dcgan.g_bn1],
+        #                 [dcgan.h2_w, dcgan.h2_b, dcgan.g_bn2],
+        #                 [dcgan.h3_w, dcgan.h3_b, dcgan.g_bn3],
+        #                 [dcgan.h4_w, dcgan.h4_b, None])
+
+        # Below is codes for visualization
+        OPTION = 1
+        visualize(sess, dcgan, FLAGS, OPTION)
 
 if __name__ == '__main__':
   tf.app.run()

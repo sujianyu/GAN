@@ -19,17 +19,7 @@ class TRAINSTEP(object):
 def conv_out_size_same(size, stride):
   return int(math.ceil(float(size) / float(stride)))
 
-def get_hanzi(data_dir,dataset):
-    hanzisets = []
-    # 取汉字形成集合
-    datasetp = dataset
-    data_dir = data_dir
-    hanzi_path = os.path.join(data_dir, dataset)
-    for dir in os.listdir(hanzi_path):
-      path = os.path.join(hanzi_path, dir)
-      if os.path.isdir(path):
-        hanzisets.append(dir)
-    return hanzisets
+
 
 class DCGAN(object):
   def __init__(self, sess, input_height=108, input_width=108, crop=True,
@@ -170,7 +160,7 @@ class DCGAN(object):
     self.d_vars = [var for var in t_vars if 'd_' in var.name]
     self.g_vars = [var for var in t_vars if 'g_' in var.name]
 
-    self.saver = tf.train.Saver()
+    self.saver = tf.train.Saver(max_to_keep=1)
 
   def train(self, config):
     d_optim = tf.train.AdamOptimizer(config.learning_rate, beta1=config.beta1) \
