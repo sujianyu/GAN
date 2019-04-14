@@ -60,8 +60,10 @@ def main(_):
   run_config.gpu_options.allow_growth=True
 
   hanzisets = get_hanzi(FLAGS)
-  for hanzi in hanzisets:
-    if not hanzi in ["且","世","老","新","利"]:
+  #宗：440
+  hanzi_complete = ["且","世","老","新","利","九","合","秋","光","白","思","莫"]
+  for hanzi in hanzi_complete:
+    #if not hanzi in ["且","世","老","新","利","九","合","秋","光","白","思","莫"]:
       tf.reset_default_graph()
       with tf.Session(config=run_config) as sess:
 
